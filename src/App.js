@@ -66,7 +66,7 @@ class App extends Component {
 
   handleSave = () => {
     if(this.isInvoiceValid()) {
-      const invoices = [...this.state.invoices, this.state.currentInvoice]
+      const invoices = [...this.state.invoices, {...this.state.currentInvoice}]
       this.setState({
         invoices,
         showSuccessMsg: true,
@@ -74,7 +74,7 @@ class App extends Component {
         showErrorMsg: false,
         lastSaved: this.state.currentInvoice.invoiceNumber
       })
-      localStorage.setItem('invoices',JSON.stringify(invoices))
+      localStorage.setItem('invoices', JSON.stringify(invoices))
     } else {
       this.setState({showErrorMsg: true})
     }
