@@ -1,58 +1,35 @@
 import React, { Component } from 'react';
-import { Form, Button, Message, Icon, List } from 'semantic-ui-react';
+import { Form, Button, Icon, List } from 'semantic-ui-react';
 import { countries } from './utils/countries';
 import DatePicker from 'react-datepicker';
 import moment from 'moment';
 import 'react-datepicker/dist/react-datepicker.css';
 
 class FormComponent extends Component {
-  state={
-    invoiceDate: moment(),
-    dueDate: moment()
-  }
-
-  handleDateChange = (field, date) => {
-    this.setState({ [field]: date })
-  }
-
-  componentWillMount = () => {
-  }
+  state={}
 
   handleUploadClick = () => {
     this.refs.imgUpload.click()
-  }
-
-  handleFileInput = (e, value) => {
-    const fileName = e.target.value.slice(12,-1)
-    this.setState({file: fileName})
   }
 
   render() {
     return (
       <Form className='c-Form'>
         <h3 className='c-Form__header'>Enter Invoice</h3>
-        {this.state.showError ?
-        <Message
-          className='c-Form__msg'
-          error
-          size='tiny'
-          header='Please fill in required fileds with the correct data'
-        />
-        : null}
         <Form.Input
           label='Invoice Number'
           name='invoiceNumber'
           placeholder='Invoice Number'
-          // value={this.props.invoiceNumber}
-          // onChange={this.handleInputChange}
-          // error={this.props.showError && !this.props.invoiceNumber}
+          value={this.props.currentInvoice.invoiceNumber || ''}
+          onChange={this.props.onInputChange}
+          error={this.props.showError && !this.props.currentInvoice.invoiceNumber}
         />
         <Form.Input
           label='Invoice Date'
         >
           <DatePicker
-            selected={this.state.invoiceDate}
-            onChange={this.handleDateChange.bind(this, 'invoiceDate')}
+            selected={this.props.currentInvoice.invoiceDate}
+            onChange={this.props.onDateChange.bind(this, 'invoiceDate')}
             maxDate={moment()}
           />
         </Form.Input>
@@ -63,25 +40,25 @@ class FormComponent extends Component {
           type='number'
           min='0.01'
           step='0.01'
-          // value={this.props.invoiceAmount}
-          // onChange={this.handleInputChange}
-          // error={this.props.showError && !this.props.invoiceAmount}
+          value={this.props.currentInvoice.invoiceAmount || ''}
+          onChange={this.props.onInputChange}
+          error={this.props.showError && !this.props.currentInvoice.invoiceAmount}
         />
         <Form.Input
           label='Invoice Due Date'
         >
           <DatePicker
-            selected={this.state.dueDate}
-            onChange={this.handleDateChange.bind(this, 'dueDate')}
+            selected={this.props.currentInvoice.dueDate}
+            onChange={this.props.onDateChange.bind(this, 'dueDate')}
           />
         </Form.Input>
         <Form.Input
           label='Customer Number'
           name='customerNumber'
           placeholder='Customer Number'
-          // value={this.props.customerNumber}
-          // onChange={this.handleInputChange}
-          // error={this.props.showError && !this.props.customerNumber}
+          value={this.props.currentInvoice.customerNumber || ''}
+          onChange={this.props.onInputChange}
+          error={this.props.showError && !this.props.currentInvoice.customerNumber}
         />
         <Form.Dropdown
           label='Customer Country'
@@ -89,47 +66,65 @@ class FormComponent extends Component {
           selection
           name='customerCountry'
           placeholder='Customer Country'
-          // value={this.props.customerCountry}
-          // onChange={this.handleInputChange}
+          value={this.props.currentInvoice.customerCountry || ''}
+          onChange={this.props.onInputChange}
           options={countries}
-          // error={this.props.showError && !this.props.customerCountry}
+          error={this.props.showError && !this.props.currentInvoice.customerCountry}
         />
-        <Button size='mini' color='teal' icon labelPosition='left'>
+        <Button
+          size='mini'
+          color='teal'
+          icon
+          labelPosition='left'
+          onClick={this.props.onAddProduct}
+        >
           <Icon name='plus'/>
           Add Product
         </Button>
         <List divided>
-          <List.Item>
-            <Form.Group>
-              <Form.Input
-                label='Product Name'
-                name='productName'
-                placeholder='Product Name'
-                // value={this.props.productName}
-                // onChange={this.handleInputChange}
-                // error={this.props.showError && !this.props.productName}
-              />
-              <Form.Input
-                label='Product Cost'
-                name='productCost'
-                placeholder='Product Cost'
-                type='number'
-                min='0.01'
-                step='0.01'
-                // value={this.props.productCost}
-                // onChange={this.handleInputChange}
-                // error={this.props.showError && !this.props.productCost}
-              />
-            </Form.Group>
-          </List.Item>
+          {this.props.currentInvoice.products.map((item, i) => (
+            <List.Item key={i}>
+              <Form.Group>
+                <Form.Input
+                  label='Product Name'
+                  name='name'
+                  placeholder='Product Name'
+                  value={this.props.currentInvoice.products[i].name || ''}
+                  onChange={this.props.onProductChange.bind(this, 'name', i)}
+                  error={this.props.showError && !this.props.currentInvoice.products[i].name}
+                />
+                <Form.Input
+                  label='Product Cost'
+                  name='cost'
+                  placeholder='Product Cost'
+                  type='number'
+                  min='0.01'
+                  step='0.01'
+                  value={this.props.currentInvoice.products[i].cost || ''}
+                  onChange={this.props.onProductChange.bind(this, 'cost', i)}
+                  error={this.props.showError && !this.props.currentInvoice.products[i].cost}
+                />
+                <div>
+                  <Icon name='close' size='large' onClick={this.props.onDeleteProduct.bind(this, i)}/>
+                </div>
+              </Form.Group>
+            </List.Item>
+          ))}
         </List>
-        <input type='file' ref="imgUpload" style={{'display': 'none'}} onChange={this.handleFileInput}/> 
-        <Button float='left' size='mini' color='yellow' icon labelPosition='left' onClick={this.handleUploadClick}>
+        <input type='file' ref="imgUpload" style={{'display': 'none'}} onChange={this.props.onFileInput}/> 
+        <Button
+          float='left'
+          size='mini'
+          color={this.props.showError && !this.props.currentInvoice.file ? 'red' : 'yellow'}
+          icon
+          labelPosition='left'
+          onClick={this.handleUploadClick}
+        >
           <Icon name='plus'/>
           Upload Invoice
         </Button>
-        <span>{this.state.file}</span>
-        <Button floated='right'>Save Invoice</Button>
+        <span>{this.props.currentInvoice.file}</span>
+        <Button floated='right' onClick={this.props.onSave}>Save Invoice</Button>
       </Form>
     );
   }
