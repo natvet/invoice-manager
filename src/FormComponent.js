@@ -12,8 +12,7 @@ class FormComponent extends Component {
   }
 
   handleDateChange = (field, date) => {
-    console.log(field, date)
-    this.setState({ [field], date })
+    this.setState({ [field]: date })
   }
 
   componentWillMount = () => {
@@ -53,7 +52,7 @@ class FormComponent extends Component {
         >
           <DatePicker
             selected={this.state.invoiceDate}
-            onChange={this.handleDateChange}
+            onChange={this.handleDateChange.bind(this, 'invoiceDate')}
             maxDate={moment()}
           />
         </Form.Input>
@@ -73,7 +72,7 @@ class FormComponent extends Component {
         >
           <DatePicker
             selected={this.state.dueDate}
-            onChange={this.handleDateChange}
+            onChange={this.handleDateChange.bind(this, 'dueDate')}
           />
         </Form.Input>
         <Form.Input
