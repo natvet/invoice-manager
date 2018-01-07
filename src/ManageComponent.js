@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Header, Segment, Checkbox, Grid, Icon, List, Button } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
+import FiltersComponent from './FiltersComponent.js';
 import moment from 'moment';
 import './ManageComponent.css';
 
@@ -48,6 +49,7 @@ class ManageComponent extends Component {
         {this.props.invoices.length === 0 && <Header>You don't have any invoices yet</Header>}
         {this.props.invoices.length !== 0 &&
         <div>
+          <FiltersComponent/>
           <div className='c-ManageComponent__buttons'>
             <span className='c-ManageComponent__checked-number'>{this.renderCheckedNumber()}</span>
             <Button

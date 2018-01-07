@@ -7,3 +7,15 @@ body {
 a:hover {
   color: inherit;
 }
+
+.c-slider {
+  min-width: 100px;
+  margin: 0 15px;
+  display: flex;
+  flex-direction: column;
+}
+
+.c-slider__labels {
+  display: flex;
+  justify-content: space-between;
+}
