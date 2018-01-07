@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Form, Button, Icon, List } from 'semantic-ui-react';
+import { Form, Button, Icon, List, Label } from 'semantic-ui-react';
 import { countries } from './utils/countries';
 import DatePicker from 'react-datepicker';
 import moment from 'moment';
@@ -14,8 +14,8 @@ class FormComponent extends Component {
 
   render() {
     return (
-      <Form className='c-Form'>
-        <h3 className='c-Form__header'>Enter Invoice</h3>
+      <Form>
+        <h3>Enter Invoice</h3>
         <Form.Input
           label='Invoice Number'
           name='invoiceNumber'
@@ -43,7 +43,11 @@ class FormComponent extends Component {
           value={this.props.currentInvoice.invoiceAmount || ''}
           onChange={this.props.onInputChange}
           error={this.props.showError && !this.props.currentInvoice.invoiceAmount}
-        />
+          labelPosition='left'
+        >
+          <Label basic>$</Label>
+          <input/>
+        </Form.Input>
         <Form.Input
           label='Invoice Due Date'
         >
@@ -103,7 +107,11 @@ class FormComponent extends Component {
                   value={this.props.currentInvoice.products[i].cost || ''}
                   onChange={this.props.onProductChange.bind(this, 'cost', i)}
                   error={this.props.showError && !this.props.currentInvoice.products[i].cost}
-                />
+                  labelPosition='left'
+                >
+                  <Label basic>$</Label>
+                  <input/>
+                </Form.Input>
                 <div>
                   <Icon name='close' size='large' onClick={this.props.onDeleteProduct.bind(this, i)}/>
                 </div>

@@ -3,7 +3,7 @@ import FormComponent from './FormComponent.js';
 import ManageComponent from './ManageComponent.js';
 import MenuComponent from './MenuComponent.js';
 import { Card, Message } from 'semantic-ui-react';
-import { BrowserRouter, Switch, Route, Link } from 'react-router-dom';
+import { BrowserRouter, Switch, Route } from 'react-router-dom';
 import moment from 'moment';
 import './App.css';
 
@@ -16,7 +16,11 @@ const initialModel = {
 class App extends Component {
   state={invoices: []}
 
-  componentWillMount = () => this.setState({currentInvoice: {...initialModel}})
+  componentWillMount = () => {
+    const savedInvoices = JSON.parse(localStorage.getItem('invoices'))
+    savedInvoices && this.setState({invoices: savedInvoices})
+    this.setState({currentInvoice: {...initialModel}})
+  }
 
   handleDateChange = (field, date) => {
     let currentInvoice = {...this.state.currentInvoice}
@@ -27,20 +31,20 @@ class App extends Component {
   handleInputChange = (e, {name, value}) => {
     let currentInvoice = {...this.state.currentInvoice}
     currentInvoice[name] = value 
-    this.setState({ currentInvoice, showSuccessMsg: false })
+    this.setState({ currentInvoice })
   }
 
   handleFileInput = (e, value) => {
     let currentInvoice = {...this.state.currentInvoice}
     const fileName = e.target.value.slice(12,-1)
     currentInvoice.file = fileName 
-    this.setState({ currentInvoice, showSuccessMsg: false })
+    this.setState({ currentInvoice })
   }
 
   handleAddProduct = () => {
     let currentInvoice = {...this.state.currentInvoice}
     currentInvoice.products = [...currentInvoice.products, {}]    
-    this.setState({ currentInvoice, showSuccessMsg: false })
+    this.setState({ currentInvoice })
   }
 
   handleDeleteProduct = (i) => {
@@ -68,7 +72,7 @@ class App extends Component {
 
   handleSave = () => {
     if(this.isInvoiceValid()) {
-      const invoices = [...this.state.invoices, {...this.state.currentInvoice}]
+      const invoices = [...this.state.invoices, this.state.currentInvoice]
       this.setState({
         invoices,
         showSuccessMsg: true,
@@ -76,6 +80,9 @@ class App extends Component {
         showErrorMsg: false,
         lastSaved: this.state.currentInvoice.invoiceNumber
       })
+      setTimeout(() => {
+        this.setState({showSuccessMsg: false})
+      }, 3000)
       localStorage.setItem('invoices', JSON.stringify(invoices))
     } else {
       this.setState({showErrorMsg: true})
@@ -88,7 +95,7 @@ class App extends Component {
       <BrowserRouter>
         <div className="c-App">
           <MenuComponent/>
-          <Card className='c-Form' fluid>
+          <Card fluid>
             <Card.Content>
               {this.state.showSuccessMsg ?
               <Message
@@ -105,7 +112,11 @@ class App extends Component {
               />
               : null}
               <Switch>
-                <Route path="/manage" render={(props) => <ManageComponent path={this.props.path}/>}/>
+                <Route path="/manage" render={(props) => 
+                  <ManageComponent
+                    invoices={this.state.invoices}
+                  />}
+                />
                 <Route path="/" render={(props) =>
                   <FormComponent
                     onInputChange={this.handleInputChange}
