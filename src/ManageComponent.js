@@ -4,7 +4,7 @@ import moment from 'moment';
 import './ManageComponent.css';
 
 class ManageComponent extends Component {
-  state={}
+  state={checked: []}
 
   handleToggleDetails = (index) => {
     if(this.state[index] === 'open') {
@@ -12,6 +12,32 @@ class ManageComponent extends Component {
     } else {
       this.setState({[index]: 'open'})
     }
+  }
+
+  handleCheckboxCheck = (index) => {
+    let checkedArr = [...this.state.checked]
+    const isPresent = checkedArr.filter(el => el === index).length
+    if(!isPresent) {
+      checkedArr = [...checkedArr, index]
+    } else {
+      const elementToDelete = this.state.checked.indexOf(index)
+      checkedArr.splice(elementToDelete, 1)
+    }
+    this.setState({checked: checkedArr})
+  }
+
+  handleSelectAllCheck = (e, {checked}) => {
+    let checkedArr = [...this.state.checked]
+    if(checked) {
+      checkedArr = this.props.invoices.map((invoice, i) => i)
+    } else {
+      checkedArr = []
+    }
+    this.setState({checked: checkedArr})
+  }
+
+  isChecked = (i) => {
+    return this.state.checked.filter(el => el === i).length ? true : false
   }
 
   render() {
@@ -22,25 +48,40 @@ class ManageComponent extends Component {
         {this.props.invoices.length !== 0 &&
         <div>
           <div className='c-ManageComponent__buttons'>
-            <Button size='tiny' color='orange' icon labelPosition='left'>
+            <span className='c-ManageComponent__checked-number'>{this.renderCheckedNumber()}</span>
+            <Button
+              size='tiny'
+              color='orange'
+              icon
+              labelPosition='left'
+              onClick={this.props.onStatusChange.bind(this, this.state.checked, 'rejected')}
+            >
               <Icon name='close'/>
               Reject
             </Button>
-            <Button size='tiny' color='green' icon labelPosition='left'>
+            <Button
+              size='tiny'
+              color='green'
+              icon
+              labelPosition='left'
+              onClick={this.props.onStatusChange.bind(this, this.state.checked, 'approved')}
+            >
               <Icon name='checkmark'/>
               Approve
             </Button>
-            <Button size='tiny' color='red'>
+            <Button
+              size='tiny'
+              color='red'
+            >
               <Icon name='trash'/>
               Delete
             </Button>
           </div>
           <Segment.Group>
             <Segment className='c-ManageComponent__head'>
-            {console.log(this.props.invoices)}
               <Grid>
                 <Grid.Column width={1}>
-                  <Checkbox/>
+                  <Checkbox onClick={this.handleSelectAllCheck}/>
                 </Grid.Column>
                 <Grid.Column width={3}>
                   Invoice Number
@@ -51,7 +92,7 @@ class ManageComponent extends Component {
                 <Grid.Column width={2}>
                   Invoice Date
                 </Grid.Column>
-                <Grid.Column width={3}>
+                <Grid.Column width={2}>
                   Invoice Amount
                 </Grid.Column>
                 <Grid.Column width={2}>
@@ -63,7 +104,10 @@ class ManageComponent extends Component {
               <Segment key={index}>
                 <Grid>
                   <Grid.Column width={1}>
-                    <Checkbox/>
+                    <Checkbox
+                      onClick={this.handleCheckboxCheck.bind(this, index)}
+                      checked={this.isChecked(index)}
+                    />
                   </Grid.Column>
                   <Grid.Column width={3}>
                     {invoice.invoiceNumber}
@@ -74,7 +118,7 @@ class ManageComponent extends Component {
                   <Grid.Column width={2}>
                     {moment(invoice.invoiceDate).format('L')}
                   </Grid.Column>
-                  <Grid.Column width={3}>
+                  <Grid.Column width={2}>
                     ${invoice.invoiceAmount}
                   </Grid.Column>
                   <Grid.Column width={2}>
@@ -83,6 +127,9 @@ class ManageComponent extends Component {
                   <Grid.Column width={2} className='c-ManageComponent__show-more' onClick={this.handleToggleDetails.bind(this, index)}>
                     {this.state[index] === 'open' ? 'Hide' : 'Show'} Details
                     <Icon name={this.state[index] === 'open' ? 'chevron up' : 'chevron down'}/>
+                  </Grid.Column>
+                  <Grid.Column width={1}>
+                    {this.renderIcon(invoice.status)}
                   </Grid.Column>
                 </Grid>
                 {this.state[index] === 'open' &&
@@ -102,6 +149,22 @@ class ManageComponent extends Component {
       }
       </div>
     );
+  }
+  renderCheckedNumber = () => {
+    if(this.state.checked && this.state.checked.length === 1) {
+      return this.state.checked.length + ' Invoice selected'
+    } else if(this.state.checked && this.state.checked.length > 1) {
+      return this.state.checked.length + ' Invoices selected'
+    }
+  }
+  renderIcon = (status) => {
+    if(status === 'approved') {
+      return <Icon size='large' color='green' name='check circle'/>
+    } else if (status === 'rejected') {
+      return <Icon size='large' color='orange' name='remove circle'/>
+    } else {
+      return <Icon size='large' color='grey' name='help circle outline'/>
+    }
   }
 }
 

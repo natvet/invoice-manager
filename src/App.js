@@ -90,6 +90,13 @@ class App extends Component {
     window.scroll(0,0)
   }
 
+  handleStatusChange = (indexes, status) => {
+    let invoices = [...this.state.invoices]
+    indexes.map(index => invoices[index].status = status)
+    this.setState({invoices})
+    localStorage.setItem('invoices', JSON.stringify(invoices))
+  }
+
   render() {
     return (
       <BrowserRouter>
@@ -115,6 +122,7 @@ class App extends Component {
                 <Route path="/manage" render={(props) => 
                   <ManageComponent
                     invoices={this.state.invoices}
+                    onStatusChange={this.handleStatusChange}
                   />}
                 />
                 <Route path="/" render={(props) =>

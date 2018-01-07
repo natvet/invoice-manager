@@ -8,5 +8,14 @@
 }
 
 .c-ManageComponent__buttons {
-  text-align: right;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.c-ManageComponent__checked-number {
+  font-size: 1.2rem;
+  list-height: 1;
+  font-weight: 600;
+  padding: 0 10px;
 }
