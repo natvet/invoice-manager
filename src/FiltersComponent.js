@@ -92,7 +92,7 @@ class FiltersComponent extends Component {
               options={this.props.productsOptions}
             />
             <div className='c-FiltersComponent__button'>
-              <Button floated='right' onClick={this.applyFilters}>Filter</Button>
+              <Button floated='right' onClick={this.applyFilters}>Apply filters</Button>
             </div>
           </Form.Group>
         </Form>

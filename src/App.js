@@ -151,7 +151,10 @@ class App extends Component {
 
   handleFiltersApply = (filters) => {
     let invoices = [...this.state.invoices]
-    const filteredInvoices = this.filterByCustomer(filters.customerNumber, invoices)
+    const filteredInvoices = [
+      ...this.filterByCustomer(filters.customerNumber, invoices),
+      ...this.filterByCountry(filters.customerCountry, invoices)
+    ]
     this.setState({filteredInvoices})
   }
 
@@ -159,7 +162,12 @@ class App extends Component {
     let filtered = []
     filtered = [].concat.apply([], numbers.map(number => invoices.filter((item => item.customerNumber === number))))
     return filtered
+  }
 
+  filterByCountry = (countries, invoices) => {
+    let filtered = []
+    filtered = [].concat.apply([], countries.map(country => invoices.filter((item => item.customerCountry === country))))
+    return filtered
   }
 
   render() {
