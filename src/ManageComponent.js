@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Header, Segment, Checkbox, Grid, Icon, List, Button } from 'semantic-ui-react';
+import { Link } from 'react-router-dom';
 import moment from 'moment';
 import './ManageComponent.css';
 
@@ -84,10 +85,10 @@ class ManageComponent extends Component {
                 <Grid.Column width={1}>
                   <Checkbox onClick={this.handleSelectAllCheck}/>
                 </Grid.Column>
-                <Grid.Column width={3}>
+                <Grid.Column width={2}>
                   Invoice Number
                 </Grid.Column>
-                <Grid.Column width={3}>
+                <Grid.Column width={2}>
                   Customer Number
                 </Grid.Column>
                 <Grid.Column width={2}>
@@ -110,10 +111,10 @@ class ManageComponent extends Component {
                       checked={this.isChecked(index)}
                     />
                   </Grid.Column>
-                  <Grid.Column width={3}>
+                  <Grid.Column width={2}>
                     {invoice.invoiceNumber}
                   </Grid.Column>
-                  <Grid.Column width={3}>
+                  <Grid.Column width={2}>
                     {invoice.customerNumber}
                   </Grid.Column>
                   <Grid.Column width={2}>
@@ -128,6 +129,9 @@ class ManageComponent extends Component {
                   <Grid.Column width={2} className='c-ManageComponent__show-more' onClick={this.handleToggleDetails.bind(this, index)}>
                     {this.state[index] === 'open' ? 'Hide' : 'Show'} Details
                     <Icon name={this.state[index] === 'open' ? 'chevron up' : 'chevron down'}/>
+                  </Grid.Column>
+                  <Grid.Column width={2}>
+                    <Button size='tiny' as={Link} to='/edit' onClick={this.props.onEdit.bind(this, index)}>Edit</Button>
                   </Grid.Column>
                   <Grid.Column width={1}>
                     {this.renderIcon(invoice.status)}

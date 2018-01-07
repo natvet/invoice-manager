@@ -12,10 +12,18 @@ class FormComponent extends Component {
     this.refs.imgUpload.click()
   }
 
+  handleSave = () => {
+    if(this.props.edit) {
+      this.props.onUpdate()
+    } else {
+      this.props.onSave()
+    }
+  }
+
   render() {
     return (
       <Form>
-        <h3>Enter Invoice</h3>
+        <h3>{this.props.edit ? 'Edit ' : 'Enter '}Invoice</h3>
         <Form.Input
           label='Invoice Number'
           name='invoiceNumber'
@@ -132,7 +140,7 @@ class FormComponent extends Component {
           Upload Invoice
         </Button>
         <span>{this.props.currentInvoice.file}</span>
-        <Button floated='right' onClick={this.props.onSave}>Save Invoice</Button>
+        <Button floated='right' onClick={this.handleSave}>{this.props.edit ? 'Update' : 'Save'} Invoice</Button>
       </Form>
     );
   }

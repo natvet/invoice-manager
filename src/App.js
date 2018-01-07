@@ -90,6 +90,27 @@ class App extends Component {
     window.scroll(0,0)
   }
 
+  handleInvoiceUpdate = () => {
+    if(this.isInvoiceValid()) {
+      const invoices = [...this.state.invoices]
+      invoices.splice(this.state.indexToEdit, 1, this.state.currentInvoice)
+      this.setState({
+        invoices,
+        showSuccessMsg: true,
+        currentInvoice: {...initialModel},
+        showErrorMsg: false,
+        lastSaved: this.state.currentInvoice.invoiceNumber
+      })
+      setTimeout(() => {
+        this.setState({showSuccessMsg: false})
+      }, 3000)
+      localStorage.setItem('invoices', JSON.stringify(invoices))
+    } else {
+      this.setState({showErrorMsg: true})
+    }
+    window.scroll(0,0)
+  }
+
   handleStatusChange = (status) => {
     let invoices = [...this.state.invoices]
     let indexes = [...this.state.checked]
@@ -107,6 +128,14 @@ class App extends Component {
   }
 
   handleCheckboxCheck = (checked) => this.setState({checked})
+
+  handleInvoiceEdit = (index) => {
+    const invoices = [...this.state.invoices]
+    let currentInvoice = invoices[index]
+    currentInvoice.invoiceDate = moment(currentInvoice.invoiceDate)
+    currentInvoice.dueDate = moment(currentInvoice.dueDate)
+    this.setState({currentInvoice, indexToEdit: index})
+  }
 
   render() {
     return (
@@ -137,9 +166,24 @@ class App extends Component {
                     onStatusChange={this.handleStatusChange}
                     onDelete={this.handleInvoiceDelete}
                     checked={this.state.checked}
+                    onEdit={this.handleInvoiceEdit}
                   />}
                 />
-                <Route path="/" render={(props) =>
+                <Route path="/edit" render={(props) =>
+                  <FormComponent
+                    onInputChange={this.handleInputChange}
+                    onDateChange={this.handleDateChange}
+                    onFileInput={this.handleFileInput}
+                    onAddProduct={this.handleAddProduct}
+                    onDeleteProduct={this.handleDeleteProduct}
+                    onProductChange={this.handleProductChange}
+                    onUpdate={this.handleInvoiceUpdate}
+                    currentInvoice={this.state.currentInvoice}
+                    showError={this.state.showErrorMsg}
+                    edit
+                  />}
+                />
+                <Route path="/" render={(props) => 
                   <FormComponent
                     onInputChange={this.handleInputChange}
                     onDateChange={this.handleDateChange}
@@ -151,7 +195,7 @@ class App extends Component {
                     currentInvoice={this.state.currentInvoice}
                     showError={this.state.showErrorMsg}
                   />}
-                />
+                />                
               </Switch>
             </Card.Content>
           </Card>
