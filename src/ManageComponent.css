@@ -6,3 +6,7 @@
   color: #7C7A7A;
   cursor: pointer;
 }
+
+.c-ManageComponent__buttons {
+  text-align: right;
+}
