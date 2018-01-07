@@ -153,7 +153,8 @@ class App extends Component {
     let invoices = [...this.state.invoices]
     const filteredInvoices = [
       ...this.filterByCustomer(filters.customerNumber, invoices),
-      ...this.filterByCountry(filters.customerCountry, invoices)
+      ...this.filterByCountry(filters.customerCountry, invoices),
+      ...this.filterByProduct(filters.products, invoices)
     ]
     this.setState({filteredInvoices})
   }
@@ -168,6 +169,13 @@ class App extends Component {
     let filtered = []
     filtered = [].concat.apply([], countries.map(country => invoices.filter((item => item.customerCountry === country))))
     return filtered
+  }
+
+  filterByProduct = (products, invoices) => {
+    let filtered = products.map(product => invoices.filter((item => item.products.filter(el => el.name === product).length > 0)))
+    const filteredFlatten = [].concat.apply([], filtered)
+    return filteredFlatten
+
   }
 
   render() {
