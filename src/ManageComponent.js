@@ -30,7 +30,7 @@ class ManageComponent extends Component {
 
   handleRangeChange = (range) => {
     let filters = {...this.state.filters}
-    filters[range] = range
+    filters.range = range
     this.setState({filters})
   }
 

@@ -44,9 +44,8 @@ class FiltersComponent extends Component {
                   <span>${filters.range[1]}</span>
                 </div>
                 <Range
-                  min={this.props.min}
-                  max={this.props.max}
-                  step={0.01}
+                  min={parseInt(this.props.min, 10)}
+                  max={parseInt(this.props.max, 10)}
                   allowCross={false}
                   value={filters.range}
                   onChange={this.handleRangeChange}
