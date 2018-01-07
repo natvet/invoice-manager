@@ -161,7 +161,7 @@ class App extends Component {
               <Switch>
                 <Route path="/manage" render={(props) => 
                   <ManageComponent
-                    invoices={this.state.invoices}
+                    invoices={this.state.filteredInvoices || this.state.invoices}
                     onCheckboxCheck={this.handleCheckboxCheck}
                     onStatusChange={this.handleStatusChange}
                     onDelete={this.handleInvoiceDelete}

@@ -3,22 +3,28 @@ import { Segment, Form, Button } from 'semantic-ui-react';
 import DatePicker from 'react-datepicker';
 import moment from 'moment';
 import 'react-datepicker/dist/react-datepicker.css';
-import { countries } from './utils/countries';
 import { Range } from 'rc-slider';
 import 'rc-slider/assets/index.css';
 import './FiltersComponent.css';
 
 class FiltersComponent extends Component {
   state={
-    customerNumber: '',
+    customerNumber: [],
     fromDate: moment(),
     toDate: moment(),
-    customerCountry: '',
-    products: [],
-    range: [1, 1000]
+    customerCountry: [],
+    products: []
   }
 
-  applyFilters = () => console.log('filter')
+  componentWillMount = () => {
+    this.setState({range: [this.props.minAmount, this.props.maxAmount]})
+  }
+
+  handleFiltersChange = (filter, e, {value}) => {
+    this.setState({[filter]: value})
+  }
+
+  applyFilters = () => console.log(this.state)
 
   handleRangeChange = (range) => {
     this.setState({range})
@@ -33,11 +39,12 @@ class FiltersComponent extends Component {
               label='Customer Number'
               search
               selection
+              multiple
               name='customerNumber'
               placeholder='Customer Number'
               value={this.state.customerNumber}
-              onChange={this.props.onFilterChange}
-              options={countries}
+              onChange={this.handleFiltersChange.bind(this, 'customerNumber')}
+              options={this.props.customerNumberOptions}
             />
             <Form.Input
               label='Invoice amount'
@@ -47,7 +54,14 @@ class FiltersComponent extends Component {
                   <span>${this.state.range[0]}</span>
                   <span>${this.state.range[1]}</span>
                 </div>
-                <Range allowCross={false} value={this.state.range} onChange={this.handleRangeChange}/>
+                <Range
+                  min={this.props.minAmount}
+                  max={this.props.maxAmount}
+                  step={0.01}
+                  allowCross={false}
+                  value={this.state.range}
+                  onChange={this.handleRangeChange}
+                />
               </div>
             </Form.Input>
             <Form.Input
@@ -70,11 +84,12 @@ class FiltersComponent extends Component {
               label='Customer Country'
               search
               selection
+              multiple
               name='customerCountry'
               placeholder='Customer Country'
               value={this.state.customerCountry}
-              onChange={this.props.onFilterChange}
-              options={countries}
+              onChange={this.handleFiltersChange.bind(this, 'customerCountry')}
+              options={this.props.customerCountryOptions}
             />
             <Form.Dropdown
               label='Products'
@@ -84,8 +99,8 @@ class FiltersComponent extends Component {
               name='products'
               placeholder='Products'
               value={this.state.products}
-              onChange={this.props.onFilterChange}
-              options={countries}
+              onChange={this.handleFiltersChange.bind(this, 'products')}
+              options={this.props.productsOptions}
             />
             <div className='c-FiltersComponent__button'>
               <Button floated='right' onClick={this.applyFilters}>Filter</Button>

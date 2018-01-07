@@ -43,13 +43,39 @@ class ManageComponent extends Component {
   }
 
   render() {
+    const customerNumberOptions = [...new Set(this.props.invoices.map(item => item.customerNumber))]
+                                  .map((item, i) => ({
+                                    'text': item,
+                                    'key': i,
+                                    'value': item
+                                  }))
+    const customerCountryOptions = [...new Set(this.props.invoices.map(item => item.customerCountry))]
+                                  .map((item, i) => ({
+                                    'text': item,
+                                    'key': i,
+                                    'value': item
+                                  }))
+    const productsOptions = [...new Set([].concat.apply([], this.props.invoices.map(item => item.products)).map(item => item.name))]
+                              .map((item, i) => ({
+                                'text': item,
+                                'key': i,
+                                'value': item
+                              }))
+    const minAmount = Math.min(...this.props.invoices.map(item => item.invoiceAmount))
+    const maxAmount = Math.max(...this.props.invoices.map(item => item.invoiceAmount))
     return (
       <div className='c-ManageComponent'>
         <h3>Manage Invoices</h3>
         {this.props.invoices.length === 0 && <Header>You don't have any invoices yet</Header>}
         {this.props.invoices.length !== 0 &&
         <div>
-          <FiltersComponent/>
+          <FiltersComponent
+            customerNumberOptions={customerNumberOptions}
+            customerCountryOptions={customerCountryOptions}
+            productsOptions={productsOptions}
+            minAmount={minAmount}
+            maxAmount={maxAmount}
+          />
           <div className='c-ManageComponent__buttons'>
             <span className='c-ManageComponent__checked-number'>{this.renderCheckedNumber()}</span>
             <Button
