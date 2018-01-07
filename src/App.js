@@ -14,7 +14,7 @@ const initialModel = {
 }
 
 class App extends Component {
-  state={invoices: []}
+  state={invoices: [], checked: []}
 
   componentWillMount = () => {
     const savedInvoices = JSON.parse(localStorage.getItem('invoices'))
@@ -90,12 +90,23 @@ class App extends Component {
     window.scroll(0,0)
   }
 
-  handleStatusChange = (indexes, status) => {
+  handleStatusChange = (status) => {
     let invoices = [...this.state.invoices]
+    let indexes = [...this.state.checked]
     indexes.map(index => invoices[index].status = status)
     this.setState({invoices})
     localStorage.setItem('invoices', JSON.stringify(invoices))
   }
+
+  handleInvoiceDelete = () => {
+    let invoices = [...this.state.invoices]
+    let indexes = [...this.state.checked]
+    indexes.map(index => invoices.splice(index, 1))
+    this.setState({invoices, checked: []})
+    localStorage.setItem('invoices', JSON.stringify(invoices))
+  }
+
+  handleCheckboxCheck = (checked) => this.setState({checked})
 
   render() {
     return (
@@ -122,7 +133,10 @@ class App extends Component {
                 <Route path="/manage" render={(props) => 
                   <ManageComponent
                     invoices={this.state.invoices}
+                    onCheckboxCheck={this.handleCheckboxCheck}
                     onStatusChange={this.handleStatusChange}
+                    onDelete={this.handleInvoiceDelete}
+                    checked={this.state.checked}
                   />}
                 />
                 <Route path="/" render={(props) =>

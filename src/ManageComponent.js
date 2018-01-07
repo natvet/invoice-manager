@@ -4,7 +4,7 @@ import moment from 'moment';
 import './ManageComponent.css';
 
 class ManageComponent extends Component {
-  state={checked: []}
+  state={}
 
   handleToggleDetails = (index) => {
     if(this.state[index] === 'open') {
@@ -15,29 +15,29 @@ class ManageComponent extends Component {
   }
 
   handleCheckboxCheck = (index) => {
-    let checkedArr = [...this.state.checked]
+    let checkedArr = [...this.props.checked]
     const isPresent = checkedArr.filter(el => el === index).length
     if(!isPresent) {
       checkedArr = [...checkedArr, index]
     } else {
-      const elementToDelete = this.state.checked.indexOf(index)
+      const elementToDelete = this.props.checked.indexOf(index)
       checkedArr.splice(elementToDelete, 1)
     }
-    this.setState({checked: checkedArr})
+    this.props.onCheckboxCheck(checkedArr)
   }
 
   handleSelectAllCheck = (e, {checked}) => {
-    let checkedArr = [...this.state.checked]
+    let checkedArr = [...this.props.checked]
     if(checked) {
       checkedArr = this.props.invoices.map((invoice, i) => i)
     } else {
       checkedArr = []
     }
-    this.setState({checked: checkedArr})
+    this.props.onCheckboxCheck(checkedArr)
   }
 
   isChecked = (i) => {
-    return this.state.checked.filter(el => el === i).length ? true : false
+    return this.props.checked.filter(el => el === i).length ? true : false
   }
 
   render() {
@@ -54,7 +54,7 @@ class ManageComponent extends Component {
               color='orange'
               icon
               labelPosition='left'
-              onClick={this.props.onStatusChange.bind(this, this.state.checked, 'rejected')}
+              onClick={this.props.onStatusChange.bind(this, 'rejected')}
             >
               <Icon name='close'/>
               Reject
@@ -64,7 +64,7 @@ class ManageComponent extends Component {
               color='green'
               icon
               labelPosition='left'
-              onClick={this.props.onStatusChange.bind(this, this.state.checked, 'approved')}
+              onClick={this.props.onStatusChange.bind(this, 'approved')}
             >
               <Icon name='checkmark'/>
               Approve
@@ -72,6 +72,7 @@ class ManageComponent extends Component {
             <Button
               size='tiny'
               color='red'
+              onClick={this.props.onDelete}
             >
               <Icon name='trash'/>
               Delete
@@ -151,10 +152,10 @@ class ManageComponent extends Component {
     );
   }
   renderCheckedNumber = () => {
-    if(this.state.checked && this.state.checked.length === 1) {
-      return this.state.checked.length + ' Invoice selected'
-    } else if(this.state.checked && this.state.checked.length > 1) {
-      return this.state.checked.length + ' Invoices selected'
+    if(this.props.checked && this.props.checked.length === 1) {
+      return this.props.checked.length + ' Invoice selected'
+    } else if(this.props.checked && this.props.checked.length > 1) {
+      return this.props.checked.length + ' Invoices selected'
     }
   }
   renderIcon = (status) => {
