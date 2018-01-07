@@ -175,7 +175,6 @@ class App extends Component {
     let filtered = products.map(product => invoices.filter((item => item.products.filter(el => el.name === product).length > 0)))
     const filteredFlatten = [].concat.apply([], filtered)
     return filteredFlatten
-
   }
 
   render() {

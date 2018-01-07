@@ -57,7 +57,7 @@ class ManageComponent extends Component {
   handleSelectAllCheck = (e, {checked}) => {
     let checkedArr = [...this.props.checked]
     if(checked) {
-      checkedArr = this.props.invoices.map((invoice, i) => i)
+      checkedArr = this.props.invoices.map((invoice, i) => invoice.id)
     } else {
       checkedArr = []
     }
