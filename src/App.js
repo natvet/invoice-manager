@@ -154,7 +154,8 @@ class App extends Component {
     const filteredInvoices = [
       ...this.filterByCustomer(filters.customerNumber, invoices),
       ...this.filterByCountry(filters.customerCountry, invoices),
-      ...this.filterByProduct(filters.products, invoices)
+      ...this.filterByProduct(filters.products, invoices),
+      ...this.filterByAmount(filters.range, invoices)
     ]
     this.setState({filteredInvoices})
   }
@@ -175,6 +176,12 @@ class App extends Component {
     let filtered = products.map(product => invoices.filter((item => item.products.filter(el => el.name === product).length > 0)))
     const filteredFlatten = [].concat.apply([], filtered)
     return filteredFlatten
+  }
+
+  filterByAmount = (range, invoices) => {
+    const min = range[0]
+    const max = range[1]
+    return invoices.filter(invoice => invoice.invoiceAmount >= min && invoice.invoiceAmount <= max)
   }
 
   render() {
