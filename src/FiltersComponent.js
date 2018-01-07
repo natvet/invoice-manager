@@ -1,36 +1,25 @@
 import React, { Component } from 'react';
 import { Segment, Form, Button } from 'semantic-ui-react';
 import DatePicker from 'react-datepicker';
-import moment from 'moment';
 import 'react-datepicker/dist/react-datepicker.css';
 import { Range } from 'rc-slider';
 import 'rc-slider/assets/index.css';
 import './FiltersComponent.css';
 
 class FiltersComponent extends Component {
-  state={
-    customerNumber: [],
-    fromDate: moment(),
-    toDate: moment(),
-    customerCountry: [],
-    products: []
-  }
-
-  componentWillMount = () => {
-    this.setState({range: [this.props.minAmount, this.props.maxAmount]})
-  }
 
   handleFiltersChange = (filter, e, {value}) => {
-    this.setState({[filter]: value})
+    this.props.onFilterChange(filter, value)
   }
 
-  applyFilters = () => console.log(this.state)
+  applyFilters = () => this.props.onFiltersApply()
 
   handleRangeChange = (range) => {
-    this.setState({range})
+    this.props.onRangeChange(range)
   }
 
   render() {
+    const {filters} = this.props
     return (
       <Segment>
         <Form className='c-FiltersComponent'>
@@ -42,7 +31,7 @@ class FiltersComponent extends Component {
               multiple
               name='customerNumber'
               placeholder='Customer Number'
-              value={this.state.customerNumber}
+              value={filters.customerNumber}
               onChange={this.handleFiltersChange.bind(this, 'customerNumber')}
               options={this.props.customerNumberOptions}
             />
@@ -51,15 +40,15 @@ class FiltersComponent extends Component {
             >
               <div className='c-slider'>
                 <div className='c-slider__labels'>
-                  <span>${this.state.range[0]}</span>
-                  <span>${this.state.range[1]}</span>
+                  <span>${filters.range[0]}</span>
+                  <span>${filters.range[1]}</span>
                 </div>
                 <Range
-                  min={this.props.minAmount}
-                  max={this.props.maxAmount}
+                  min={this.props.min}
+                  max={this.props.max}
                   step={0.01}
                   allowCross={false}
-                  value={this.state.range}
+                  value={filters.range}
                   onChange={this.handleRangeChange}
                 />
               </div>
@@ -68,7 +57,7 @@ class FiltersComponent extends Component {
               label='From Due Date'
             >
             <DatePicker
-              selected={this.state.fromDate}
+              selected={filters.fromDate}
               // onChange={this.props.onDateChange.bind(this, 'dueDate')}
             />
             </Form.Input>
@@ -76,7 +65,7 @@ class FiltersComponent extends Component {
               label='To Due Date'
             >
             <DatePicker
-              selected={this.state.toDate}
+              selected={filters.toDate}
               // onChange={this.props.onDateChange.bind(this, 'dueDate')}
             />
             </Form.Input>
@@ -87,7 +76,7 @@ class FiltersComponent extends Component {
               multiple
               name='customerCountry'
               placeholder='Customer Country'
-              value={this.state.customerCountry}
+              value={filters.customerCountry}
               onChange={this.handleFiltersChange.bind(this, 'customerCountry')}
               options={this.props.customerCountryOptions}
             />
@@ -98,7 +87,7 @@ class FiltersComponent extends Component {
               multiple
               name='products'
               placeholder='Products'
-              value={this.state.products}
+              value={filters.products}
               onChange={this.handleFiltersChange.bind(this, 'products')}
               options={this.props.productsOptions}
             />

@@ -6,7 +6,33 @@ import moment from 'moment';
 import './ManageComponent.css';
 
 class ManageComponent extends Component {
-  state={}
+  state={
+      filters: {
+      customerNumber: [],
+      fromDate: moment(),
+      toDate: moment(),
+      customerCountry: [],
+      products: []
+    }
+  }
+
+  componentWillMount = () => {
+    let filters = {...this.state.filters}
+    filters.range = [Math.min(...this.props.invoices.map(item => item.invoiceAmount)), Math.max(...this.props.invoices.map(item => item.invoiceAmount))]
+    this.setState({filters})
+  }
+
+  handleFiltersChange = (filter, value) => {
+    let filters = {...this.state.filters}
+    filters[filter] = value
+    this.setState({filters})
+  }
+
+  handleRangeChange = (range) => {
+    let filters = {...this.state.filters}
+    filters[range] = range
+    this.setState({filters})
+  }
 
   handleToggleDetails = (index) => {
     if(this.state[index] === 'open') {
@@ -16,14 +42,14 @@ class ManageComponent extends Component {
     }
   }
 
-  handleCheckboxCheck = (index) => {
+  handleCheckboxCheck = (id) => {
     let checkedArr = [...this.props.checked]
-    const isPresent = checkedArr.filter(el => el === index).length
+    const isPresent = checkedArr.filter(el => el === id).length
     if(!isPresent) {
-      checkedArr = [...checkedArr, index]
+      checkedArr = [...checkedArr, id]
     } else {
-      const elementToDelete = this.props.checked.indexOf(index)
-      checkedArr.splice(elementToDelete, 1)
+      const elementToRemove = this.props.checked.indexOf(id)
+      checkedArr.splice(elementToRemove, 1)
     }
     this.props.onCheckboxCheck(checkedArr)
   }
@@ -42,6 +68,12 @@ class ManageComponent extends Component {
     return this.props.checked.filter(el => el === i).length ? true : false
   }
 
+  handleDelete = () => this.props.onDelete()
+
+  handleFiltersApply = () => {
+    this.props.onFiltersApply(this.state.filters)
+  }
+
   render() {
     const customerNumberOptions = [...new Set(this.props.invoices.map(item => item.customerNumber))]
                                   .map((item, i) => ({
@@ -55,14 +87,15 @@ class ManageComponent extends Component {
                                     'key': i,
                                     'value': item
                                   }))
-    const productsOptions = [...new Set([].concat.apply([], this.props.invoices.map(item => item.products)).map(item => item.name))]
+    const productsOptions = [...new Set([].concat.apply([], this.props.invoices.map(item => item.products)).map(item => item && item.name))]
                               .map((item, i) => ({
                                 'text': item,
                                 'key': i,
                                 'value': item
                               }))
-    const minAmount = Math.min(...this.props.invoices.map(item => item.invoiceAmount))
-    const maxAmount = Math.max(...this.props.invoices.map(item => item.invoiceAmount))
+    const invoices = this.props.filteredInvoices || this.props.invoices
+    const min = Math.min(...this.props.invoices.map(item => item.invoiceAmount))
+    const max = Math.max(...this.props.invoices.map(item => item.invoiceAmount))
     return (
       <div className='c-ManageComponent'>
         <h3>Manage Invoices</h3>
@@ -73,8 +106,12 @@ class ManageComponent extends Component {
             customerNumberOptions={customerNumberOptions}
             customerCountryOptions={customerCountryOptions}
             productsOptions={productsOptions}
-            minAmount={minAmount}
-            maxAmount={maxAmount}
+            onFiltersApply={this.handleFiltersApply}
+            onFilterChange={this.handleFiltersChange}
+            onRangeChange={this.handleRangeChange}
+            filters={this.state.filters}
+            min={min}
+            max={max}
           />
           <div className='c-ManageComponent__buttons'>
             <span className='c-ManageComponent__checked-number'>{this.renderCheckedNumber()}</span>
@@ -101,7 +138,7 @@ class ManageComponent extends Component {
             <Button
               size='tiny'
               color='red'
-              onClick={this.props.onDelete}
+              onClick={this.handleDelete}
             >
               <Icon name='trash'/>
               Delete
@@ -130,13 +167,13 @@ class ManageComponent extends Component {
                 </Grid.Column>
               </Grid>
             </Segment>
-            {this.props.invoices && this.props.invoices.map((invoice, index) => (
+            {invoices.map((invoice, index) => (
               <Segment key={index}>
                 <Grid>
                   <Grid.Column width={1}>
                     <Checkbox
-                      onClick={this.handleCheckboxCheck.bind(this, index)}
-                      checked={this.isChecked(index)}
+                      onClick={this.handleCheckboxCheck.bind(this, invoice.id)}
+                      checked={this.isChecked(invoice.id)}
                     />
                   </Grid.Column>
                   <Grid.Column width={2}>

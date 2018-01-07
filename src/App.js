@@ -14,10 +14,10 @@ const initialModel = {
 }
 
 class App extends Component {
-  state={invoices: [], checked: []}
+  state={invoices: [], checked: [], filtered: []}
 
   componentWillMount = () => {
-    const savedInvoices = JSON.parse(localStorage.getItem('invoices'))
+    let savedInvoices = JSON.parse(localStorage.getItem('invoices'))
     savedInvoices && this.setState({invoices: savedInvoices})
     this.setState({currentInvoice: {...initialModel}})
   }
@@ -72,7 +72,8 @@ class App extends Component {
 
   handleSave = () => {
     if(this.isInvoiceValid()) {
-      const invoices = [...this.state.invoices, this.state.currentInvoice]
+      const id = this.state.invoices.length ? (Math.max(...this.state.invoices.map(item => item.id)) + 1) : 1
+      const invoices = [...this.state.invoices, {...this.state.currentInvoice, id: id}]
       this.setState({
         invoices,
         showSuccessMsg: true,
@@ -114,16 +115,27 @@ class App extends Component {
   handleStatusChange = (status) => {
     let invoices = [...this.state.invoices]
     let indexes = [...this.state.checked]
-    indexes.map(index => invoices[index].status = status)
+    indexes.map(id => {
+      const i = invoices.findIndex(item => item.id === id)
+      return invoices[i].status = status
+    })
     this.setState({invoices})
     localStorage.setItem('invoices', JSON.stringify(invoices))
   }
 
   handleInvoiceDelete = () => {
     let invoices = [...this.state.invoices]
-    let indexes = [...this.state.checked]
-    indexes.map(index => invoices.splice(index, 1))
-    this.setState({invoices, checked: []})
+    let filtered = [...this.state.filtered]
+    let ids = [...this.state.checked]
+    ids.map(id => {
+      const i = invoices.findIndex(item => item.id === id)
+      return invoices.splice(i, 1)
+    })
+    ids.map(id => {
+      const i = filtered.findIndex(item => item.id === id)
+      return filtered.splice(i, 1)
+    })
+    this.setState({invoices, filtered, checked: []})
     localStorage.setItem('invoices', JSON.stringify(invoices))
   }
 
@@ -135,6 +147,19 @@ class App extends Component {
     currentInvoice.invoiceDate = moment(currentInvoice.invoiceDate)
     currentInvoice.dueDate = moment(currentInvoice.dueDate)
     this.setState({currentInvoice, indexToEdit: index})
+  }
+
+  handleFiltersApply = (filters) => {
+    let invoices = [...this.state.invoices]
+    const filteredInvoices = this.filterByCustomer(filters.customerNumber, invoices)
+    this.setState({filteredInvoices})
+  }
+
+  filterByCustomer = (numbers, invoices) => {
+    let filtered = []
+    filtered = [].concat.apply([], numbers.map(number => invoices.filter((item => item.customerNumber === number))))
+    return filtered
+
   }
 
   render() {
@@ -161,12 +186,14 @@ class App extends Component {
               <Switch>
                 <Route path="/manage" render={(props) => 
                   <ManageComponent
-                    invoices={this.state.filteredInvoices || this.state.invoices}
+                    invoices={this.state.invoices}
+                    filteredInvoices={this.state.filteredInvoices}
                     onCheckboxCheck={this.handleCheckboxCheck}
                     onStatusChange={this.handleStatusChange}
                     onDelete={this.handleInvoiceDelete}
                     checked={this.state.checked}
                     onEdit={this.handleInvoiceEdit}
+                    onFiltersApply={this.handleFiltersApply}
                   />}
                 />
                 <Route path="/edit" render={(props) =>
