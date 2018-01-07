@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
 import FormComponent from './FormComponent.js';
-import Logo from './Logo.js';
-import { Card, Menu, Message } from 'semantic-ui-react';
+import ManageComponent from './ManageComponent.js';
+import MenuComponent from './MenuComponent.js';
+import { Card, Message } from 'semantic-ui-react';
+import { BrowserRouter, Switch, Route, Link } from 'react-router-dom';
 import moment from 'moment';
 import './App.css';
 
@@ -12,7 +14,7 @@ const initialModel = {
 }
 
 class App extends Component {
-  state={activeItem: 'enter', invoices: []}
+  state={invoices: []}
 
   componentWillMount = () => this.setState({currentInvoice: {...initialModel}})
 
@@ -25,20 +27,20 @@ class App extends Component {
   handleInputChange = (e, {name, value}) => {
     let currentInvoice = {...this.state.currentInvoice}
     currentInvoice[name] = value 
-    this.setState({ currentInvoice })
+    this.setState({ currentInvoice, showSuccessMsg: false })
   }
 
   handleFileInput = (e, value) => {
     let currentInvoice = {...this.state.currentInvoice}
     const fileName = e.target.value.slice(12,-1)
     currentInvoice.file = fileName 
-    this.setState({ currentInvoice })
+    this.setState({ currentInvoice, showSuccessMsg: false })
   }
 
   handleAddProduct = () => {
     let currentInvoice = {...this.state.currentInvoice}
     currentInvoice.products = [...currentInvoice.products, {}]    
-    this.setState({ currentInvoice })
+    this.setState({ currentInvoice, showSuccessMsg: false })
   }
 
   handleDeleteProduct = (i) => {
@@ -46,7 +48,7 @@ class App extends Component {
     let products = [...this.state.currentInvoice.products]
     products.splice(i, 1)
     currentInvoice.products = products
-    this.setState({ currentInvoice })
+    this.setState({ currentInvoice})
   }
 
   handleProductChange = (field, item, e, {value}) => {
@@ -83,44 +85,45 @@ class App extends Component {
 
   render() {
     return (
-      <div className="c-App">
-        <Menu pointing secondary>
-          <Menu.Item><Logo/></Menu.Item>
-          <Menu.Menu position='right'>
-            <Menu.Item name='enter invoice' active={this.state.activeItem === 'enter'}/>
-            <Menu.Item name='manage invoices' active={this.state.activeItem === 'manage'}/>
-          </Menu.Menu>
-        </Menu>
-        <Card className='c-Form' fluid>
-          <Card.Content>
-            {this.state.showSuccessMsg ?
-            <Message
-              success
-              size='tiny'
-              header={`Invoice number ${this.state.lastSaved} has been successfully saved`}
-            />
-            : null}
-            {this.state.showErrorMsg ?
-            <Message
-              error
-              size='tiny'
-              header='Please fill in required fileds with the correct data'
-            />
-            : null}
-            <FormComponent
-              onInputChange={this.handleInputChange}
-              onDateChange={this.handleDateChange}
-              onFileInput={this.handleFileInput}
-              onAddProduct={this.handleAddProduct}
-              onDeleteProduct={this.handleDeleteProduct}
-              onProductChange={this.handleProductChange}
-              onSave={this.handleSave}
-              currentInvoice={this.state.currentInvoice}
-              showError={this.state.showErrorMsg}
-            />
-          </Card.Content>
-        </Card>
-      </div>
+      <BrowserRouter>
+        <div className="c-App">
+          <MenuComponent/>
+          <Card className='c-Form' fluid>
+            <Card.Content>
+              {this.state.showSuccessMsg ?
+              <Message
+                success
+                size='tiny'
+                header={`Invoice number ${this.state.lastSaved} has been successfully saved`}
+              />
+              : null}
+              {this.state.showErrorMsg ?
+              <Message
+                error
+                size='tiny'
+                header='Please fill in required fileds with the correct data'
+              />
+              : null}
+              <Switch>
+                <Route path="/manage" render={(props) => <ManageComponent path={this.props.path}/>}/>
+                <Route path="/" render={(props) =>
+                  <FormComponent
+                    onInputChange={this.handleInputChange}
+                    onDateChange={this.handleDateChange}
+                    onFileInput={this.handleFileInput}
+                    onAddProduct={this.handleAddProduct}
+                    onDeleteProduct={this.handleDeleteProduct}
+                    onProductChange={this.handleProductChange}
+                    onSave={this.handleSave}
+                    currentInvoice={this.state.currentInvoice}
+                    showError={this.state.showErrorMsg}
+                  />}
+                />
+              </Switch>
+            </Card.Content>
+          </Card>
+        </div>
+      </BrowserRouter>
     );
   }
 }
