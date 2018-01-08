@@ -36,7 +36,7 @@ class App extends Component {
 
   handleFileInput = (e, value) => {
     let currentInvoice = {...this.state.currentInvoice}
-    const fileName = e.target.value.slice(12,-1)
+    const fileName = e.target.value.slice(12)
     currentInvoice.file = fileName 
     this.setState({ currentInvoice })
   }
