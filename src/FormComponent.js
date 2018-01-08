@@ -137,7 +137,7 @@ class FormComponent extends Component {
           onClick={this.handleUploadClick}
         >
           <Icon name='plus'/>
-          Upload Invoice
+          Upload Document
         </Button>
         <span>{this.props.currentInvoice.file}</span>
         <Button floated='right' onClick={this.handleSave}>{this.props.edit ? 'Update' : 'Save'} Invoice</Button>

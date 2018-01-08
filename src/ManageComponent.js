@@ -2,18 +2,20 @@ import React, { Component } from 'react';
 import { Header, Segment, Checkbox, Grid, Icon, List, Button } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
 import FiltersComponent from './FiltersComponent.js';
+import ModalComponent from './ModalComponent.js';
 import moment from 'moment';
 import './ManageComponent.css';
 
 class ManageComponent extends Component {
   state={
       filters: {
-      customerNumber: [],
-      fromDate: moment(),
-      toDate: moment(),
-      customerCountry: [],
-      products: []
-    }
+        customerNumber: [],
+        fromDate: moment(),
+        toDate: moment(),
+        customerCountry: [],
+        products: []
+      },
+      isModalOpen: false
   }
 
   componentWillMount = () => {
@@ -74,7 +76,18 @@ class ManageComponent extends Component {
     this.setState({filters})
   }
 
-  handleDelete = () => this.props.onDelete()
+  handleDeleteClick = () => {
+    this.props.checked.length && this.setState({isModalOpen: true})
+  }
+
+  handleDeleteConfirm = () => {
+    this.props.onDelete()
+    this.setState({isModalOpen: false})
+  }
+
+  handleDeleteCancel = () => {
+    this.setState({isModalOpen: false})
+  }
 
   handleFiltersApply = () => {
     this.props.onFiltersApply(this.state.filters)
@@ -145,7 +158,7 @@ class ManageComponent extends Component {
             <Button
               size='tiny'
               color='red'
-              onClick={this.handleDelete}
+              onClick={this.handleDeleteClick}
             >
               <Icon name='trash'/>
               Delete
@@ -224,6 +237,11 @@ class ManageComponent extends Component {
           </Segment.Group>
         </div>
       }
+      <ModalComponent
+        open={this.state.isModalOpen}
+        onConfirm={this.handleDeleteConfirm}
+        onCancel={this.handleDeleteCancel}
+      />
       </div>
     );
   }
