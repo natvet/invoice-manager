@@ -150,9 +150,9 @@ class App extends Component {
 
   handleFiltersApply = (filters) => {
     let invoices = [...this.state.invoices]
-    invoices = filters.customerNumber ? this.filterByCustomer(filters.customerNumber, invoices) : invoices
-    invoices = filters.customerCountry ? this.filterByCountry(filters.customerCountry, invoices) : invoices
-    invoices = filters.products ? this.filterByProduct(filters.products, invoices) : invoices
+    invoices = filters.customerNumber.length ? this.filterByCustomer(filters.customerNumber, invoices) : invoices
+    invoices = filters.customerCountry.length ? this.filterByCountry(filters.customerCountry, invoices) : invoices
+    invoices = filters.products.length ? this.filterByProduct(filters.products, invoices) : invoices
     invoices = this.filterByAmount(filters.range, invoices)
     invoices = this.filterByDate(filters.fromDate, filters.toDate, invoices)
     this.setState({filteredInvoices: invoices})
