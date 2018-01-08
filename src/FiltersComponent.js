@@ -57,7 +57,7 @@ class FiltersComponent extends Component {
             >
             <DatePicker
               selected={filters.fromDate}
-              // onChange={this.props.onDateChange.bind(this, 'dueDate')}
+              onChange={this.props.onDateChange.bind(this, 'fromDate')}
             />
             </Form.Input>
             <Form.Input
@@ -65,7 +65,7 @@ class FiltersComponent extends Component {
             >
             <DatePicker
               selected={filters.toDate}
-              // onChange={this.props.onDateChange.bind(this, 'dueDate')}
+              onChange={this.props.onDateChange.bind(this, 'toDate')}
             />
             </Form.Input>
             <Form.Dropdown

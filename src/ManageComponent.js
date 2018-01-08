@@ -68,6 +68,12 @@ class ManageComponent extends Component {
     return this.props.checked.filter(el => el === i).length ? true : false
   }
 
+  handleDateChange = (field, date) => {
+    let filters = {...this.state.filters}
+    filters[field] = date
+    this.setState({filters})
+  }
+
   handleDelete = () => this.props.onDelete()
 
   handleFiltersApply = () => {
@@ -108,6 +114,7 @@ class ManageComponent extends Component {
             productsOptions={productsOptions}
             onFiltersApply={this.handleFiltersApply}
             onFilterChange={this.handleFiltersChange}
+            onDateChange={this.handleDateChange}
             onRangeChange={this.handleRangeChange}
             filters={this.state.filters}
             min={min}

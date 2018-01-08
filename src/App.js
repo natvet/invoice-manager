@@ -24,7 +24,6 @@ class App extends Component {
 
   handleDateChange = (field, date) => {
     let currentInvoice = {...this.state.currentInvoice}
-    currentInvoice[field] = date 
     this.setState({ currentInvoice })
   }
 
@@ -151,13 +150,12 @@ class App extends Component {
 
   handleFiltersApply = (filters) => {
     let invoices = [...this.state.invoices]
-    const filteredInvoices = [
-      ...this.filterByCustomer(filters.customerNumber, invoices),
-      ...this.filterByCountry(filters.customerCountry, invoices),
-      ...this.filterByProduct(filters.products, invoices),
-      ...this.filterByAmount(filters.range, invoices)
-    ]
-    this.setState({filteredInvoices})
+    invoices = filters.customerNumber ? this.filterByCustomer(filters.customerNumber, invoices) : invoices
+    invoices = filters.customerCountry ? this.filterByCountry(filters.customerCountry, invoices) : invoices
+    invoices = filters.products ? this.filterByProduct(filters.products, invoices) : invoices
+    invoices = this.filterByAmount(filters.range, invoices)
+    invoices = this.filterByDate(filters.fromDate, filters.toDate, invoices)
+    this.setState({filteredInvoices: invoices})
   }
 
   filterByCustomer = (numbers, invoices) => {
@@ -181,7 +179,13 @@ class App extends Component {
   filterByAmount = (range, invoices) => {
     const min = range[0]
     const max = range[1]
-    return invoices.filter(invoice => invoice.invoiceAmount >= min && invoice.invoiceAmount <= max)
+    const filtered = invoices.filter(invoice => invoice.invoiceAmount >= min && invoice.invoiceAmount <= max)
+    return filtered
+  }
+
+  filterByDate = (from, to, invoices) => {
+    const filtered = invoices.filter(i =>  moment(i.dueDate).isSameOrAfter(from, 'day') && moment(i.dueDate).isSameOrBefore(to, 'day'))
+    return filtered
   }
 
   render() {
