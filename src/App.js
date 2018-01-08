@@ -24,6 +24,7 @@ class App extends Component {
 
   handleDateChange = (field, date) => {
     let currentInvoice = {...this.state.currentInvoice}
+    currentInvoice[field] = date
     this.setState({ currentInvoice })
   }
 
